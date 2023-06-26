@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "array": "c",
+        "hash_map": "c",
+        "bitset": "c",
+        "initializer_list": "c",
+        "string_view": "c",
+        "utility": "c",
+        "random": "c",
+        "stddef.h": "c",
+        "stdlib.h": "c"
+    }
+}

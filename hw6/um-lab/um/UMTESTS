@@ -1,0 +1,12 @@
+halt.um
+halt-verbose.um
+print-six.um
+multiply.um
+output.um
+division.um
+cmov.um
+nand.um
+map.um
+input.um
+map2.um
+map-larger.um

@@ -1,0 +1,27 @@
+Title:          Profiling
+Author:         Theo Dayton (tdayto01)
+                Sangyu Chen (schen35)
+Time spent analyzing the assignment: 2h
+Time spent solving the problems after your analysis: 15h
+
+Acknowledgements:
+    1. We borrowed um from Yuehan(Eunice) Dai (ydai05) and Grace Ye (gye01)
+    2. TAs
+
+-----------------------------------------------------------------------------
+
+Final UM:
+
+The routines that takes up the most time in our final UM is the UArray_at
+function which is roughly 33% of the time in our program, while other functions
+all take up less than 10%.
+The assembly code for this function could be improved by skipping some lines
+that are not necessary for the functionality when speed is the most important
+thing. For example, there are cmp, test, and je lines that are all meant to
+catch user errors, since one of the assembly line in Uarray_at is to callq
+Except_Raise. There are also assembly code instructions that are meant to reach
+whatever the element in the Uarray is pointing to. If we used a c-array
+instead, which stores elements instead of pointers, there would be no need to
+access more memory, saving a lot of time.
+
+------------------------------------------------------------------------------

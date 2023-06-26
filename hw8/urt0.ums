@@ -1,0 +1,10 @@
+// urt0.ums
+// tdayto01 and jtogni01
+// Last Modified: 12/13/2021
+
+.section init
+    .temps r6, r7
+    .zero r0
+.section stk
+    .space 100000
+    endstack:

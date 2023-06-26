@@ -1,0 +1,93 @@
+// printd.ums
+// tdayto01 and jtogni01
+// Last Modified: 12/13/2021
+
+    // Initializing zero register and temporary registers
+.section init
+    .zero r0
+    .temps r6, r7
+
+    // declaring valuestack pointer and space required to hold values
+.section stk
+    .space 100000
+    valuestack:
+
+.section text
+    // main print label that goes to newline_end if stack is empty. It also
+    // sets r1 to valuestack
+    print:
+        if (r2 == endstack) goto newline_end using r4
+        r1 := valuestack
+
+        // main print loop, pops value from main stack and stores it in main
+        // stack. Then pushes this same value onto stack valuestack, for
+        // safekeeping. Goes to edge case labels if its an edge case
+        main_print_loop:
+        pop r5 off stack r2
+        push r5 on stack r1
+
+        output ">>> "
+        r4 := 0
+        if (r5 == 0) goto zero_case
+        if (r5 >s 0) goto positive_case using r3
+
+        // if digit is negative, output '-', convert to positive and continue
+        // to positive_case
+        negative_convert:
+            output '-'
+            r5 := 0 - r5
+            goto positive_case
+
+        // if digit is 0, print out '0' and go to print_end
+        zero_case:
+            output "0"
+            goto print_end
+
+        // if digit is positive, check if its also negative. If this is true
+        // go to print_most_negative. Else print out the digit. If the number
+        // contains multiple digits, push the least significant digit onto
+        // valuestack and continue the loop until there are no more.
+        positive_case:
+            if (0 >s r5) goto print_most_negative using r3
+            r4 := r4 + 1
+            r3 := r5 / 10
+            if (r3 == 0) goto print_digits
+            r3 := r5 mod 10
+            push r3 on stack r1
+            r5 := r5 / 10
+            goto positive_case
+
+        // Once all digits are read, push final digit onto valuestack and goto
+        // print_digits_loop
+        print_digits:
+            push r5 on stack r1
+            goto print_digits_loop
+
+        // once all values are saved on stack valuestack, pop values off
+        // valuestack until its empty, and print them out each time
+        // Once done, goto print_end
+        print_digits_loop:
+            if (r4 == 0) goto print_end
+            pop r5 off stack r1
+            output r5 + '0'
+            r4 := r4 - 1
+            goto print_digits_loop
+
+        // edge case for printing the most negative number
+        print_most_negative:
+            output "-2147483648"
+            goto print_end
+
+
+        // Once printing is done, output a newline and goto main_print_loop if
+        // there are still more values in main stack to be printed
+        print_end:
+            output "\n"
+            if (r2 != endstack) goto main_print_loop using r4
+            // Once all values are printed, pop values from valuestack and save
+            // them to main stack. Then goto newline_end
+            returnstack:
+                pop r5 off stack r1
+                push r5 on stack r2
+                if (r1 != valuestack) goto returnstack using r4
+            goto newline_end

@@ -1,0 +1,42 @@
+000000000040105c <phase_2>:
+  40105c:       55                      push   %rbp
+  40105d:       53                      push   %rbx
+  40105e:       48 83 ec 28             sub    $0x28,%rsp //memory garbage
+  401062:       48 89 e6                mov    %rsp,%rsi
+  401065:       e8 90 08 00 00          callq  4018fa <read_six_numbers> //SEE BELOW
+  40106a:       48 8d 5c 24 04          lea    0x4(%rsp),%rbx
+  40106f:       48 8d 6c 24 18          lea    0x18(%rsp),%rbp
+  401074:       8b 43 fc                mov    -0x4(%rbx),%eax
+  401077:       83 c0 05                add    $0x5,%eax
+  40107a:       39 03                   cmp    %eax,(%rbx)
+  40107c:       74 05                   je     401083 <phase_2+0x27>
+  40107e:       e8 41 08 00 00          callq  4018c4 <explode_bomb>
+  401083:       48 83 c3 04             add    $0x4,%rbx
+  401087:       48 39 eb                cmp    %rbp,%rbx
+  40108a:       75 e8                   jne    401074 <phase_2+0x18>
+  40108c:       48 83 c4 28             add    $0x28,%rsp //memory garbage
+  401090:       5b                      pop    %rbx
+  401091:       5d                      pop    %rbp
+  401092:       c3                      retq
+
+
+
+
+  00000000004018fa <read_six_numbers>:
+  4018fa:       48 83 ec 18             sub    $0x18,%rsp
+  4018fe:       48 89 f2                mov    %rsi,%rdx
+  401901:       48 8d 4e 04             lea    0x4(%rsi),%rcx
+  401905:       48 8d 46 14             lea    0x14(%rsi),%rax
+  401909:       48 89 44 24 08          mov    %rax,0x8(%rsp)
+  40190e:       48 8d 46 10             lea    0x10(%rsi),%rax
+  401912:       48 89 04 24             mov    %rax,(%rsp)
+  401916:       4c 8d 4e 0c             lea    0xc(%rsi),%r9
+  40191a:       4c 8d 46 08             lea    0x8(%rsi),%r8
+  40191e:       be d8 20 40 00          mov    $0x4020d8,%esi
+  401923:       b8 00 00 00 00          mov    $0x0,%eax
+  401928:       e8 83 f3 ff ff          callq  400cb0 <sscanf@plt>
+  40192d:       83 f8 05                cmp    $0x5,%eax
+  401930:       7f 05                   jg     401937 <read_six_numbers+0x3d>
+  401932:       e8 8d ff ff ff          callq  4018c4 <explode_bomb>
+  401937:       48 83 c4 18             add    $0x18,%rsp
+  40193b:       c3                      retq

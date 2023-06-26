@@ -1,0 +1,3 @@
+Rotation of 0 degrees was computed in 115752707 nanoseconds
+Size of image: 4578168 
+Time taken for each pixel is 25 nanoseconds

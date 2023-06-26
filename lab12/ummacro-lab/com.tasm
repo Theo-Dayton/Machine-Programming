@@ -1,0 +1,4 @@
+macro com
+loadval rt,0
+nand p1,p2,rt
+mend

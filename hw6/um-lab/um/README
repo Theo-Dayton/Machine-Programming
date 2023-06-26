@@ -1,0 +1,157 @@
+Title:          UM
+Author:         Theo Dayton (tdayto01)
+                Sangyu Chen (schen35)
+Time spent analyzing the assignment: 2h
+Time spent preparing your design: 3h
+Tiem spent solving the problems after your analysis: 25h
+
+Acknowledgements:
+    1. HW4 & Lab10
+    2. TAs
+
+------------------------------------------------------------------------------
+
+Implementation result
+
+We believe that we have correctly implemented the 14 um instructions and they
+worked correctly with no memory leak on the unit tests we wrote, 
+but it has Assertion failed on midmark.um, sandmark.um, advent.umz and 
+codex.umz.
+
+We implemented our program as we wrote on our design doc, and added more edge
+cases for testing.
+
+------------------------------------------------------------------------------
+
+Architecture overview:
+
+um.c: our main driver function, which is responsible for holding the main 
+function. Also deals with contract violations in the command line. 
+Calls the functions in read_file.c, memory.c and arithmetic.c.
+Initializes the machine and frees the machine.
+
+read_file.c: um.c calls read_file.c for reading input file into a sequence of 
+struct instruction, which contains int opcode, RA, RB and RC.
+
+arithmetic.c: um.c calls the functions in arithmetic.c when executing opcode 
+corresponds to the following implemented operators in this module
+-conditional move
+-addition
+-multiplication
+-division
+-BitNand
+-halt
+-output
+-input
+-load value
+
+memory.c: um.c calls the functions in memory.c when executing opcode 
+corresponds to the following implemented operators in this module
+-map_segment
+-unmap_segment
+-segmented_load
+-segmented_store
+-load_program
+
+
+------------------------------------------------------------------------------
+
+Explains how long it takes your UM to execute 50 million instructions, and how 
+you know
+
+We measured the time taken for an instruction using the #include <time.h>, 
+which we used to measure a significant number of instructions. In our specific 
+case, we measured that the time taken for 20802 instructions took 0.01000020803 
+seconds. Therefore, we can extend this information to deduce that the time 
+taken for 50 million instructions will be around 24 seconds.
+
+------------------------------------------------------------------------------
+UMTESTS:
+halt.um
+Purpose: Test the halt operator
+How: calls halt()
+Expected output: none, computation stops.
+
+halt-verbose.um
+Purpose: Test the halt operator
+How: calls halt(), and prints out BAD! before failing
+Expected output: none, computation stops.
+
+print-six.um
+Purpose: Test the add operator
+How: load 48 to r1, load 9 to r2, add them and load the result to r3, 
+output r3
+Expected output: 6
+
+multiply.um
+Purpose: Test the multiplication operator
+How: load 9 to r1, load 6 to r2, multiply them and load the result to r3, 
+    output r3
+Expected output: 6
+
+
+output.um
+Purpose: Test the output and load value operator
+How: load 97 to r1, output r1
+Expected output: a
+
+
+division.um
+Purpose: Test the division operator
+How: load 122 to r1, load 3 to r2, divide value in r1 by value in r2,
+        and load the result to r3, output r3
+Expected output: (
+
+cmov.um
+Purpose: Test the conditional move operator
+How: load 1 to r2, load 97 to r1, load 98 to r3;
+     load 0 to r2, load 97 to r1, load 98 to r3;
+Expected output: ab
+
+nand.um
+Purpose: Test the bitwise nand operator
+How: load two values to 
+1 and r2, multiply them and load the result in r5;
+    load two values to r3 and r4, multiply them and load the result in r6.
+    Bitwise nand value in r5 and r6, store the result in r7, output r7.
+Expected output: 0
+
+
+map.um
+Purpose: Test map segment, segmented load, segmented store operator
+How: map a segment and uses segmented load and store to load value 
+into mapped segment, then output the loaded val.
+Expected output: <
+
+
+input.um
+Purpose: Test input operator
+How: calls input and output on r2
+Input: a
+Expected output: a
+
+
+map2.um
+Purpose: Test map segment operator
+How: map a segment twice and uses segmented load and store to load value 
+into mapped segment, then output the loaded val.
+Expected output: <
+
+map-larger.um
+Purpose: Test map segment operator
+How: map a segment and then unmap it, map a segment with a bigger length, then 
+        uses segmented load and store to load value into mapped segment, 
+        then output the loaded val.
+Expected output: a
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------

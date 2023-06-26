@@ -1,0 +1,19 @@
+COMP40 homework 4: arith
+Theo Dayton (tdayto01) and Thomson Brand (tbrand04)
+
+We received some help from TAs, but otherwise we worked on our own. 
+
+Compression appears to work properly, but decompression does not.
+
+The compress40 file contains the implementations for both the compress40 and
+the decompress40 functions, which are called based off of the command line
+inputs. Compress works by reading in a ppm, and storing its values as a
+smaller bitpack which saves size. decompress then is able to retrieve the
+values in the bitpack to display the original image
+
+
+Bitpack uses bitwise logic to extract and manipulate data stored in
+packed integers.
+
+It took us about 10 hours to analyze and understand this assignment more fully,
+and about 12 to complete the assignment.

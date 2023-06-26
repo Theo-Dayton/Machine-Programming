@@ -1,0 +1,17 @@
+// callmain.ums
+// tdayto01 and jtogni01
+// Last Modified: 12/13/2021
+
+.section init
+    .temps r6, r7
+    .zero r0
+
+.section init
+        // start label that Initializes values for r0 and r2, and calls main
+        start:
+        r0 := 0
+        r2 := endstack
+        goto main
+        // program_end responsible for halting the program
+        program_end:
+        halt

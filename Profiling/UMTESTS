@@ -1,0 +1,12 @@
+halt.um
+halt-verbose.um
+print-six.um
+add.um
+mul.um
+div.um
+nand.um
+conditional-move1.um
+conditional-move2.um
+seg.um
+map.um
+loadProgram.um

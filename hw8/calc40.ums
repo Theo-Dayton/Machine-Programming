@@ -1,0 +1,298 @@
+// calc40.ums
+// tdayto01 and jtogni01
+// Last Modified: 12/13/2021
+
+.section init
+    .zero r0
+    .temps r6, r7
+
+    jumptable:
+        .space 256
+
+    initializejumptable:
+        r4 := jumptable
+        r3 := jumptable + 255
+
+    // Initialize each slot in the jumptable with input_error.
+    populatejumptable:
+        m[r0][r4] := input_error
+        r4 := r4 + 1 using r5
+        if (r4 != r3) goto populatejumptable using r5
+
+// Assigns each character in the jumptable to its respective label.
+    populatedigitsjumptable:
+        r3 := 48
+        r4 := 58
+
+        digitsloop:
+            m[r0][r3] := digit
+            r3 := r3 + 1 using r5
+            if (r3 != r4) goto digitsloop using r5
+
+    populatespacejumptable:
+        m[r0][jumptable + ' '] := waiting
+
+    populatenewlinejumptable:
+        m[r0][jumptable + '\n'] := newline
+
+
+    populatefunctionsjumptable:
+        m[r0][jumptable + '+'] := add
+        m[r0][jumptable + '-'] := sub
+        m[r0][jumptable + '*'] := mul
+        m[r0][jumptable + '/'] := div
+        m[r0][jumptable + '|'] := or
+        m[r0][jumptable + '&'] := and
+        m[r0][jumptable + 'c'] := change
+        m[r0][jumptable + '~'] := complement
+        m[r0][jumptable + 's'] := swap
+        m[r0][jumptable + 'd'] := dup
+        m[r0][jumptable + 'p'] := popvalue
+        m[r0][jumptable + 'z'] := empty
+
+                //////////////
+                // Commands //
+                //////////////
+  // NOTE: All functions call either check1 or check2 to ensure the required
+  // number of elements already lives on the stack. If not, prints error
+  // message and returns to waiting state
+.section text
+
+    // Print "Unkown character", following with the value stored in r3
+    input_error:
+        output "Unknown character '"
+        output r3
+        output "'\n"
+        goto waiting
+
+    // Store the value of r3 in the same register as the actual value of the
+    // digit. I.e. 1 is 49 in ASCII but it would be stored as 1. Then pushes
+    // the value in r3 onto the stack and goes to entering state
+    digit:
+        r3 := r3 - '0'
+        push r3 on stack r2
+        goto entering
+
+    // Calls the print function and then returns to waiting state
+    newline:
+        goto print
+        newline_end:
+            goto waiting
+
+    // Pop top two values from stack into registers r5 and r4. Add both and
+    // store the result into r5. Push r5 value into stack r2.
+    add:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        r5 := r5 + r4
+        push r5 on stack r2
+        goto waiting
+
+    // Pop top two values from stack into registers r5 and r4. Subtract the
+    // value stored in r4 from the value stored in r5 and store the result into
+    // r5. Push r5 value into stack r2.
+    sub:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        r5 := r5 - r4
+        push r5 on stack r2
+        goto waiting
+
+    // Pop top two values from stack into registers r5 and r4. Multiply both
+    // and store the result into r5. Push r5 value into stack r2.
+    mul:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        r5 := r5 * r4
+        push r5 on stack r2
+        goto waiting
+
+    // Pop top two values from stack into registers r5 and r4. Print an error
+    // message if user tried to divide by zero. Else divide r5 by r4 and store
+    // the result into r5. Push r5 value into stack r2.
+    div:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        if (r4 == 0) goto division_zero using r3
+        if (r5 <s 0) goto division_numerator_negative using r3
+        if (r4 <s 0) goto division_denominator_negative using r3
+        goto normal_division
+
+        // Division with r5 (numerator) being negative.
+        division_numerator_negative:
+            if (r4 <s 0) goto division_both_negative using r3
+            r5 := -r5
+            r5 := r5 / r4
+            r5 := -r5
+            push r5 on stack r2
+            goto waiting
+
+        // Division with r4 (denominator) being negative.
+        division_denominator_negative:
+            r4 := -r4
+            r5 := r5 / r4
+            r5 := -r5
+            push r5 on stack r2
+            goto waiting
+
+        // Division with both r5 and r4 (numerator and denominator) being
+        // negative.
+        division_both_negative:
+            r4 := -r4
+            r5 := -r5
+            r5 := r5 / r4
+            push r5 on stack r2
+            goto waiting
+
+        // Division by zero.
+        division_zero:
+            output "Division by zero\n"
+            push r5 on stack r2
+            push r4 on stack r2
+            goto waiting
+
+        // Dividing two positive numbers.
+        normal_division:
+            r5 := r5 / r4
+            push r5 on stack r2
+            goto waiting
+
+    // Pop the top two values from the stack and store them in registers r4 and
+    // r5. Perform a bitwise OR operation and store the result into r5. Push
+    // the value in r5 onto the stack r2.
+    or:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        r5 := r5 | r4
+        push r5 on stack r2
+        goto waiting
+
+    // Pop the top two values from the stack and store them in registers r4 and
+    // r5. Perform a bitwise AND operation and store the result into r5. Push
+    // the value in r5 onto the stack r2.
+    and:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        r5 := r5 & r4
+        push r5 on stack r2
+        goto waiting
+
+    // Pop the top value from the stack and store it in register r5. Change the
+    // sign of the value in r5 and assign that result to r5. Push the value in
+    // r5 onto the stack r2.
+    change:
+        goto check1 linking r1
+        pop r5 off stack r2
+        r5 := -r5
+        push r5 on stack r2
+        goto waiting
+
+    // Pop the top value from the stack and store it in register r5. Perform a
+    // bitwise complement operation and store the result in r5. Push the value
+    // in r5 onto the stack r2.
+    complement:
+        goto check1 linking r1
+        pop r5 off stack r2
+        r5 := ~r5
+        push r5 on stack r2
+        goto waiting
+
+    // Pop the top two values from the stack and store them in registers r4 and
+    // r5 respectively. Push the value in r4 onto stack r2 and then push the
+    // value in r5 onto r2. This will swap the positions of both values in the
+    // stack r2.
+    swap:
+        goto check2 linking r1
+        pop r4 off stack r2
+        pop r5 off stack r2
+        push r4 on stack r2
+        push r5 on stack r2
+        goto waiting
+
+    // Pop the top value from the stack and store it in register r4. Assign
+    // register r5 the value of register r4. Push both r4 and r5 onto the
+    // stack r2.
+    dup:
+        goto check1 linking r1
+        pop r4 off stack r2
+        r5 := r4
+        push r4 on stack r2
+        push r5 on stack r2
+        goto waiting
+
+    // Pop top value from the stack and store it in register r4.
+    popvalue:
+        goto check1 linking r1
+        pop r4 off stack r2
+        goto waiting
+
+    // Pop top value from stack and store it into register r6. Repeat this
+    // until r2 = endstack (stack r2 is empty)..
+    empty:
+        if (r2 == endstack) goto waiting using r5
+        pop r6 off stack r2
+        if (r2 == endstack) goto waiting using r5
+        goto empty
+
+.section text
+    main:
+
+    // User input is assigned to register r3
+    waiting:
+        r3 := input()
+
+    waiting_with_character:
+        if (r3 == -1) goto main_end using r5
+        r5 := jumptable + r3
+        r5 := m[r0][r5]
+        goto r5
+
+    // Assign jumptable value respective to user input to register r5 and
+    // computes conditional statements.
+    entering:
+        r3 := input()
+        r5 := jumptable + r3
+        r5 := m[r0][r5]
+        if (r5 == digit) goto entering_with_digit using r4
+        if (r5 == input_error) goto waiting using r4
+        goto waiting_with_character
+
+     //If number has multiple digits, multiply the new value, stored in
+     // r4, by 10, and add the previous value, stored in r3, to it. In order
+     // to read in number correctly.
+     entering_with_digit:
+        pop r4 off stack r2
+        r3 := r3 - '0'
+        r4 := r4 * 10
+        r4 := r4 + r3
+        push r4 on stack r2
+        goto entering
+
+
+    main_end:
+    goto program_end
+
+.section text
+    check1:
+        r5 := endstack - r2
+        if (r5 >=s 1) goto r1 using r5
+        goto error1
+
+    error1:
+        output "Stack underflow---expected at least 1 element\n"
+        goto waiting
+
+    check2:
+        r5 := endstack - r2
+        if (r5 >=s 2) goto r1 using r5
+        goto error2
+
+    error2:
+        output "Stack underflow---expected at least 2 elements\n"
+        goto waiting

@@ -1,0 +1,44 @@
+0000000000401040 <phase_1>:
+  401040:       48 83 ec 08             sub    $0x8,%rsp  //subtracts 8 from rsp, just function stuff
+  401044:       be f0 1c 40 00          mov    $0x401cf0,%esi //puts the value 0x401cf0 (4201712 in decimal) in register %esi
+  401049:       e8 20 04 00 00          callq  40146e <strings_not_equal> //calls strings_not_equal(), which returns a value to %eax
+  40104e:       85 c0                   test   %eax,%eax
+  401050:       74 05                   je     401057 <phase_1+0x17> //if test fails, jumps to explode_bomb
+  401052:       e8 6d 08 00 00          callq  4018c4 <explode_bomb> //lose
+  401057:       48 83 c4 08             add    $0x8,%rsp //more function stuff
+  40105b:       c3                      retq
+
+
+  COMMON REGISTERS:
+  %rdi, %rsi, %rdx, %rcx, %r8, and %r9 - first 6 parameters of a function
+
+%rsp - points to the stack
+%eax - usually used to accumulate/return function results
+
+
+>>>> ANSWER: I made a cardinal rule: never to answer the phone in December. <<<<
+
+2: 5 10 15 20 25 30
+
+3: 0 e 596
+
+4: 13
+
+5: bbffaf
+
+found by printing the STRING found at the address in memory of %rsi (the memory at address 0x401cf0).
+
+a = 10
+b = 6
+c = 1
+d = 12
+e = 16
+f = 9
+
+83 / 114 / -123 / -80 / 18 / -54 / 64 / 127 / 106
+
+127 / 114 / 106 / 83 / 64 / 18 / -54 / -80 / -123
+
+626
+
+901

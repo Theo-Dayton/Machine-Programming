@@ -1,0 +1,16 @@
+{
+  "transport": "scp",
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "homework.cs.tufts.edu",
+  "port": "22",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "tdayto01",
+  "watch": [],
+  "target": "/h/tdayto01/comp40/hw7",
+  "password": "banf1eld"
+}
